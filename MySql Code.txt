@@ -1,0 +1,112 @@
+#How many hits are recorded each year?
+
+select left(Game.season,4) as Year, sum(stats.hits) as Total_hits from game  
+inner join game_teams_stats stats 
+on Game.game_id=stats.game_id 
+group by Game.season; 
+
+#Who was the hits leader for each year? 
+
+select temp.y,player.firstName,player.lastName,temp.player_id,temp.hits_total from 
+( 
+select Y,player_id,hits_total from( 
+select Y,player_id,hits_total, row_number() over ( partition by Y order by hits_total desc) as part from ( 
+select y, player_id ,sum(hits) as hits_total from  
+( 
+select skaters.player_id, skaters.hits, substr(G.season,1,4) as Y 
+from game_skater_stats as skaters  
+   
+inner join game as G  
+on skaters.game_id=G.game_id) as base1 
+group by y,player_id) as base2) as base3 #partinn on all years   
+where part=1) as temp #mow i have to join this entire tble to palyer infor tabel to get names 
+left join player_info as player on 
+temp.player_id=player.player_id 
+order by y;
+
+# What is the distribution of yearly hit totals per player? 
+
+select left(skater.game_id,4) as y, skater.player_id,concat(player.firstName, ' ', player.lastName) as FullName, sum(skater.hits) as Hits 
+from game_skater_stats as skater 
+left join player_info as player on  
+skater.player_id=player.player_id 
+group by y, FullName 
+order by y; 
+
+#What is the distribution of yearly hit totals per team? 
+
+select left(G.season,4) as Year, team.team_id, sum(team.hits) as Total_hits,team_info.teamname from game_teams_stats as team 
+inner join team_info on 
+team_info.team_id=team.team_id   
+inner join game as G on 
+G.game_id=team.game_id 
+group by G.season,team.team_id,team_info.teamname 
+order by G.season; 
+
+# Yearly Team Totals
+
+select left(game_id, 4) as Y,teams.team_id, team_info.teamName, teams.head_coach, sum(teams.goals) as 'Total Goals', 
+sum(teams.hits) as 'Total Hits', teams.faceOffWinPercentage 
+from game_teams_stats as teams 
+left join team_info on 
+teams.team_id=team_info.team_id 
+group by Y, teams.team_id 
+order by Y 
+ 
+  
+  # Who is taking the most hits? 
+ 
+select player_id, firstName, lastName, primaryPosition, count(*) as most_hits from (select a.*, b.firstName, b.lastName, b.primaryPosition 
+from game_plays_players as a 
+ 
+left join player_info as b 
+on a.player_id = b.player_id 
+where a.playerType = "Hittee") as c 
+group by player_id,firstName,lastName,primaryPosition 
+order by 5 desc 
+limit 15; 
+
+# How many goals are recorded each season? 
+
+select left(season,4) as year,sum(home_goals+away_goals) as 'Total Goals'  
+from game group by season 
+ order by season; 
+ 
+ #Who scored the most goals each year?
+ 
+  select temp.y,temp.player_id,player.firstName,player.lastName,player.primaryPosition,temp.goals from 
+( 
+select Y,player_id,goals from( 
+select Y,player_id,goals, row_number() over ( partition by Y order by goals desc) as part from ( 
+select y, player_id ,sum(goals) as goals from  
+( 
+select skaters.player_id, skaters.goals, substr(G.season,1,4) as Y  
+from game_skater_stats as skaters  
+inner join game as G  
+on skaters.game_id=G.game_id) as a 
+group by 1,2) as b) as c 
+where part=1 
+ 
+order by Y ) as temp  
+left join player_info as player on 
+temp.player_id=player.player_id 
+order by temp.Y;
+
+# What is the distribution of yearly goal totals per player? 
+
+select goals_total,count(*) as count from( 
+select Y, player_id,sum(goals) as goals_total from 
+(select a.player_id, a.goals , substr(b.season,1,4) as Y from game_skater_stats as a 
+left join nhl.game as b 
+on a.game_id=b.game_id) as c 
+group by 1,2) as d 
+
+# What is the distribution of yearly goal totals per team? 
+
+Select Y, team_id, sum(goals) as goals_total from 
+(Select  a.team_id, a.goals , substr(b.season,1,4) as Y from game_skater_stats as a 
+left join nhl.game as b 
+on a.game_id = b.game_id) as c  
+group by 1,2 
+order by 1,2; 
+group by 1; 

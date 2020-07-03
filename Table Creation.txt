@@ -1,0 +1,51 @@
+CREATE TABLE `Game Play` (  `Game ID` INT(30) NOT NULL,  `Play ID` varchar(30) NOT NULL,  `Play Number` INT(30) NOT NULL,  `Team ID` INT(30) NOT NULL,  `Team ID Against` INT(30) NOT NULL,  `Event` varchar(30) NOT NULL,  `Secondary` varchar(30) NOT NULL,  `X` INT(30) NOT NULL,  `Y` INT(30) NOT NULL,  `Period` INT(30) NOT NULL,  `Period Type` varchar(30) NOT NULL,  `Period Tme` INT(30) NOT NULL,  `Period Time Remaining` INT(30) NOT NULL,  `Date Time` DATETIME(30) NOT NULL,  `Goals Away` INT(30) NOT NULL,  `Goals Home` INT(30) NOT NULL,  `Description` varchar(70) NOT NULL,  `St x` INT(30) NOT NULL,  `St y` INT(30) NOT NULL,  `Rink Side` varchar(30) NOT NULL ); 
+
+CREATE TABLE `Game Team Stats` (  `Game ID` INT(30) NOT NULL,  `Team ID` INT(30) NOT NULL,  `HoA` varchar(30) NOT NULL,  `Won` varchar(30) NOT NULL,  `Settled In` varchar(30) NOT NULL,  `Head Coach` varchar(30) NOT NULL,  `Goals` INT(30) NOT NULL,  `Shots` INT(30) NOT NULL,  `Hits` INT(30) NOT NULL,  `Pim` INT(30) NOT NULL,  `Power Play Opportunities` INT(30) NOT NULL,  `Power Play Goals` INT(30) NOT NULL,  `Faceoff Win Percentage` INT(30) NOT NULL,  `Giveaways` INT(30) NOT NULL,`Takeaways` INT(30) NOT NULL );
+
+CREATE TABLE `Player Info` (  `Player ID` INT(30) NOT NULL,  `Team ID` INT(30) NOT NULL,  `First Name` varchar(30) NOT NULL,  `Last Name` varchar(30) NOT NULL,  `Nationality` varchar(30) NOT NULL,  `Birth City` varchar(30) NOT NULL,  `Primary Position` varchar(30) NOT NULL,  `Birth Date` DATE(30) NOT NULL,  `Link` varchar(30) NOT NULL,  PRIMARY KEY (`Player ID`) ); 
+ 
+CREATE TABLE `Goalie Stat` (  `Player ID` INT(30) NOT NULL,  `Team ID` INT(30) NOT NULL,  `Game ID` INT(30) NOT NULL,  `Save Percentage` INT(30) NOT NULL,  `Goals` INT(30) NOT NULL,  `Assist` INT(30) NOT NULL,  `Time on Ice` INT(30) NOT NULL ); 
+ 
+CREATE TABLE `Skater Stat` (  `Game ID` INT(30) NOT NULL,  `Player ID` INT(30) NOT NULL,  `Team ID` INT(30) NOT NULL,  `Penalty Minute` INT(30) NOT NULL,  `Faceoff Wins` INT(30) NOT NULL,  `Faceof Taken` INT(30) NOT NULL,  `Takeaway` INT(30) NOT NULL,  `Giveaway` INT(30) NOT NULL,  `Shorthand Goals` INT(30) NOT NULL,  `Shorthand Assist` INT(30) NOT NULL,  `Blocked` INT(30) NOT NULL,  `Plus Minus` INT(30) NOT NULL,  `Even Time on Ice` INT(30) NOT NULL,  `Short Hand Time on Ice` INT(30) NOT NULL,  `Power Play Time on Ice` INT(30) NOT NULL 
+ 
+); 
+ 
+CREATE TABLE `Game Play Players` (  `Play ID` INT(40) NOT NULL,  `Game ID` INT(40) NOT NULL,  `Play Number` INT(40) NOT NULL,  `Player ID` INT(40) NOT NULL,  `Player Type` INT(40) NOT NULL,  PRIMARY KEY (`Play ID`) ); 
+ 
+CREATE TABLE `Game` (  `Game ID` INT(30) NOT NULL,  `Team ID` INT(30) NOT NULL,  `Outcomes` varchar(30) NOT NULL,  `Venue Details` varchar(30) NOT NULL,  PRIMARY KEY (`Game ID`) ); 
+ 
+CREATE TABLE `Team Info` (  `Team ID` INT(30) NOT NULL,  `Franchise ID` INT(30) NOT NULL,  `Short Name` varchar(30) NOT NULL,  `Team Name` varchar(30) NOT NULL,  `Abbreviation` varchar(30) NOT NULL,  `Link` varchar(30) NOT NULL,  PRIMARY KEY (`Team ID`) ); 
+ 
+CREATE TABLE `Game Shift` (  `Game ID` INT(30) NOT NULL,  `Player ID` INT(30) NOT NULL,  `Shift Start` INT(30) NOT NULL,  `Shift End` INT(30) NOT NULL,  PRIMARY KEY (`Game ID`) ); 
+ 
+ALTER TABLE `Game Play` ADD CONSTRAINT `Game Play_fk0` FOREIGN KEY (`Game ID`) REFERENCES `Game`(`Game ID`); 
+ 
+
+ALTER TABLE `Game Play` ADD CONSTRAINT `Game Play_fk1` FOREIGN KEY (`Play ID`) REFERENCES `Player Info`(`Player ID`); 
+ 
+ALTER TABLE `Game Play` ADD CONSTRAINT `Game Play_fk2` FOREIGN KEY (`Team ID`) REFERENCES `Team Info`(`Team ID`); 
+ 
+ALTER TABLE `Game Team Stats` ADD CONSTRAINT `Game Team Stats_fk0` FOREIGN KEY (`Game ID`) REFERENCES `Game`(`Game ID`); 
+ 
+ALTER TABLE `Game Team Stats` ADD CONSTRAINT `Game Team Stats_fk1` FOREIGN KEY (`Team ID`) REFERENCES `Team Info`(`Team ID`); 
+ 
+ALTER TABLE `Player Info` ADD CONSTRAINT `Player Info_fk0` FOREIGN KEY (`Team ID`) REFERENCES `Team Info`(`Team ID`); 
+ 
+ALTER TABLE `Goalie Stat` ADD CONSTRAINT `Goalie Stat_fk0` FOREIGN KEY (`Player ID`) REFERENCES `Player Info`(`Player ID`); 
+ 
+ALTER TABLE `Goalie Stat` ADD CONSTRAINT `Goalie Stat_fk1` FOREIGN KEY (`Team ID`) REFERENCES `Team Info`(`Team ID`); 
+ 
+ALTER TABLE `Goalie Stat` ADD CONSTRAINT `Goalie Stat_fk2` FOREIGN KEY (`Game ID`) REFERENCES `Game`(`Game ID`); 
+ 
+ALTER TABLE `Skater Stat` ADD CONSTRAINT `Skater Stat_fk0` FOREIGN KEY (`Game ID`) REFERENCES `Game`(`Game ID`); 
+ 
+ALTER TABLE `Skater Stat` ADD CONSTRAINT `Skater Stat_fk1` FOREIGN KEY (`Player ID`) REFERENCES `Player Info`(`Player ID`); 
+ 
+ 
+ALTER TABLE `Skater Stat` ADD CONSTRAINT `Skater Stat_fk2` FOREIGN KEY (`Team ID`) REFERENCES `Team Info`(`Team ID`); 
+ 
+ALTER TABLE `Game Play Players` ADD CONSTRAINT `Game Play Players_fk0` FOREIGN KEY (`Game ID`) REFERENCES `Game`(`Game ID`); 
+ 
+ALTER TABLE `Game` ADD CONSTRAINT `Game_fk0` FOREIGN KEY (`Team ID`) REFERENCES `Game`(`Game ID`); 
+ 
+ALTER TABLE `Game Shift` ADD CONSTRAINT `Game Shift_fk0` FOREIGN KEY (`Player ID`) REFERENCES `Player Info`(`Player ID`);  
